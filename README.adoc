@@ -33,7 +33,7 @@ Two complementary approaches are provided:
 * https://github.com/dietmarwo/BuckinghamExamples/blob/master/apply_buckinghampy.py[apply_buckinghampy.py]  
   Uses https://github.com/saadgroup/BuckinghamPy[BuckinghamPy] to enumerate all valid π-groups.
 
-* https://github.com/dietmarwo/BuckinghamExamples/blob/master/rank_pi_goups.py[rank_pi_goups.py]  
+* https://github.com/dietmarwo/BuckinghamExamples/blob/master/rank_pi_groups.py[rank_pi_groups.py]  
   Uses NumPy and scikit-learn to  
   1. find all repeating-variable sets,  
   2. compute their π-groups,  
