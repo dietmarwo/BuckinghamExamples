@@ -5,13 +5,19 @@ This repository collects a variety of worked examples from the literature, demon
 == Examples
 
 *From BuckinghamPy*  
+
 – Examples from Saad et al. (2021) https://www.sciencedirect.com/science/article/pii/S2352711021001291[BuckinghamPy: A Python software for dimensional analysis]  
+
   * https://github.com/saadgroup/BuckinghamPy/blob/master/examples.ipynb[examples.ipynb]  
+
   * Centrifugal Pump example in the README: https://github.com/saadgroup/BuckinghamPy/blob/master/README.md[Centrifugal Pump]
 
 *Hydrogen Knudsen Compressor*  
+
 – From Xie & Qian (2023) https://www.sciencedirect.com/science/article/abs/pii/S0360319923023030[Dimensional-Analysis of hydrogen Knudsen compressor]  
+
   * https://github.com/xqb-python/Dimensional-Analysis[Dimensional-Analysis repository]  
+
   * See their script: https://github.com/xqb-python/Dimensional-Analysis/blob/main/%E4%B8%AD%E5%BF%83%E5%9E%82%E7%9B%B4%E7%BA%BF%E4%B8%8A%E7%9A%84%E9%80%9F%E5%BA%A6%E5%88%86%E5%B8%83/%E6%9C%80%E5%A4%A7%E6%BB%91%E7%A7%BB%E9%80%9F%E5%BA%A6.py[Hydrogen Knudsen Compressor Code]
 
 *Optimierung von Stahlgießprozessen*  
