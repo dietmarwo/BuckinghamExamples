@@ -28,7 +28,7 @@ This repository collects a variety of worked examples from the literature, demon
 
 == Python scripts
 
-Two complementary approaches are provided:
+Three complementary approaches are provided:
 
 * https://github.com/dietmarwo/BuckinghamExamples/blob/master/apply_buckinghampy.py[apply_buckinghampy.py]  
   Uses https://github.com/saadgroup/BuckinghamPy[BuckinghamPy] to enumerate all valid π-groups.
@@ -37,18 +37,22 @@ Two complementary approaches are provided:
   Uses NumPy and scikit-learn to  
   1. find all repeating-variable sets,  
   2. compute their π-groups,  
-  3. score each set by a **weighted sum** of (a) algebraic complexity, (b) coefficient-of-variation over your experimental range, and (c) predictive R² on your data.
+  3. score each set by the predictive R² adding a penalty for bad coefficient-of-variation over your experimental range.
+
+* https://github.com/dietmarwo/BuckinghamExamples/blob/master/optimize_pi_groups.py[optimize_pi_groups.py]  
+  1. Uses https://github.com/dietmarwo/fast-cma-es[fcmaes] to apply the https://github.com/avaneev/biteopt[biteopt] evolutionary
+  algorithm to vary the pi group exponents, allowing continuous values.   
+  2. score each set of pi group exponents by the predictive R² adding a penalty for bad coefficient-of-variation over your experimental range.
 
 === Customization
 
-1. **Add your own examples** to the `examples` dict (variable names + dimension matrix).  
-2. **Adapt the weights** in the ranking script to reflect your priorities (simplicity vs. variance vs. fit quality).  
-3. **Plug in your real data** (in place of the random sampling) to get π-group rankings tailored to your experiment.
+1. **Add your own examples** to the `examples` dict (variable names + dimension matrix).    
+2. **Plug in your real data** (in place of the random sampling) to get π-group rankings tailored to your experiment.
 
 == Further comparison
 
 Compare the Knudsen-compressor code with:  
-https://github.com/xqb-python/Dimensional-Analysis/blob/main/%E4%B8%AD%E5%BF%83%E5%9E%82%E7%9B%B4%E7%BA%BF%E4%B8%8A%E7%9A%84%E9%80%9F%E5%BA%A6%E5%88%86%E5%B8%83/%E6%9C%80%E5%A4%A7%E6%BB%91%E7%A7%BB%E9%80%9F%E5%BA%A6.py[Hydrogen Knudsen Compressor Code], which uses genetic optimization (overkill for small sets of valid π-groups). If you need a GA, consider https://github.com/DEAP/deap[DEAP] over geatpy—DEAP supports Python 3.12 smoothly.
+https://github.com/xqb-python/Dimensional-Analysis/blob/main/%E4%B8%AD%E5%BF%83%E5%9E%82%E7%9B%B4%E7%BA%BF%E4%B8%8A%E7%9A%84%E9%80%9F%E5%BA%A6%E5%88%86%E5%B8%83/%E6%9C%80%E5%A4%A7%E6%BB%91%E7%A7%BB%E9%80%9F%E5%BA%A6.py[Hydrogen Knudsen Compressor Code], which uses genetic optimization. GA doesn't work well for this application, specially if you allow continuous exponents. Consider evolutionary algorithms like https://github.com/avaneev/biteopt[biteopt] instead. 
 
 === Citing
 
