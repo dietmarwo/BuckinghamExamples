@@ -1,19 +1,28 @@
+:stem: latexmath
+:imagesdir: images
+:icons: font
+:source-highlighter: rouge
+:toc: left
+:toclevels: 3
+:sectlinks:
+:sectanchors:
+
 = Example Applications of the Buckingham–Pi Theorem
 
 This repository collects a variety of worked examples from the literature, demonstrating how to apply the Buckingham–Pi theorem in Python.
 
 == Motivation
 
-Dimensional analysis is a foundational tool in the physical sciences and engineering: by identifying combinations of variables that are truly dimensionless, we collapse complex phenomena onto universal scaling laws, reduce the experimental burden, and reveal the underlying structure of physical models. At its core lies the Buckingham π theorem, which tells us that any physically meaningful equation can be rewritten in terms of a smaller set of independent, dimensionless groups (the “π-groups”) whose exponents satisfy the homogeneity condition A·E = 0.
+Dimensional analysis is a foundational tool in the physical sciences and engineering: by identifying combinations of variables that are truly dimensionless, we collapse complex phenomena onto universal scaling laws, reduce the experimental burden, and reveal the underlying structure of physical models. At its core lies the Buckingham π theorem, which tells us that any physically meaningful equation can be rewritten in terms of a smaller set of independent, dimensionless groups (the "π-groups") whose exponents satisfy the homogeneity condition A·E = 0.
 
 Historically, two main approaches have been used:
 
-* Enumerative (combinatorial) methods
+* *Enumerative (combinatorial) methods*
 ** Systematically generate every integer-exponent nullspace vector  
 ** Enumerate subsets of these π-groups to discover minimal complete sets  
 ** Manually inspect each candidate for physical interpretability  
 
-* Continuous-exponent (optimization) methods
+* *Continuous-exponent (optimization) methods*
 ** Recognize that real-valued exponent vectors also satisfy A·E = 0  
 ** Use log-domain regression or evolutionary algorithms to fit continuous powers that maximize data collapse (R²) under variance constraints  
 ** Allow subtle, non-integer scalings that often yield superior empirical fits  
@@ -21,7 +30,7 @@ Historically, two main approaches have been used:
 Originally, continuous exponents were extracted by hand from experimental log-plots—researchers would sweep one candidate π-group, hold others fixed, and iteratively tweak exponents until curves overlapped. Modern work has automated this tedious loop by embedding the nullspace basis into an evolutionary optimizer (e.g., GA, CMA-ES, BiteOpt). By parameterizing
 E = Nₛ · C (where Nₛ is the orthonormal nullspace of the dimension matrix A and C ∈ ℝᵏˣᵐ contains the continuous weights), one can pose a single smooth optimization over C to discover the best m π-groups in one go.
 
-**BuckinghamExamples** brings these ideas together in an open-source, Python-based toolkit. It:
+*BuckinghamExamples* brings these ideas together in an open-source, Python-based toolkit. It:
 
 * Enumerates all classic integer π-groups for canonical fluid-mechanics and heat-transfer problems  
 * Optimizes continuous exponents for maximal data collapse under cross-validation  
@@ -30,139 +39,145 @@ E = Nₛ · C (where Nₛ is the orthonormal nullspace of the dimension matrix A
 Whether you prefer the pedagogical clarity of integer π-groups or the empirical accuracy of continuous scalings, 
 this repository provides a turnkey platform for rigorous, reproducible dimensional analysis.
 
-
 == Examples
 
-*From BuckinghamPy*  
+=== From BuckinghamPy
 
-– Examples from Saad et al. (2021) https://www.sciencedirect.com/science/article/pii/S2352711021001291[BuckinghamPy: A Python software for dimensional analysis]  
+Examples from Saad et al. (2021) https://www.sciencedirect.com/science/article/pii/S2352711021001291[BuckinghamPy: A Python software for dimensional analysis]  
 
-  * https://github.com/saadgroup/BuckinghamPy/blob/master/examples.ipynb[examples.ipynb]  
+* https://github.com/saadgroup/BuckinghamPy/blob/master/examples.ipynb[examples.ipynb]  
+* Centrifugal Pump example in the README: https://github.com/saadgroup/BuckinghamPy/blob/master/README.md[Centrifugal Pump]
 
-  * Centrifugal Pump example in the README: https://github.com/saadgroup/BuckinghamPy/blob/master/README.md[Centrifugal Pump]
+=== Hydrogen Knudsen Compressor
 
-*Hydrogen Knudsen Compressor*  
+From Xie & Qian (2023) https://www.sciencedirect.com/science/article/abs/pii/S0360319923023030[Dimensional-Analysis of hydrogen Knudsen compressor]  
 
-– From Xie & Qian (2023) https://www.sciencedirect.com/science/article/abs/pii/S0360319923023030[Dimensional-Analysis of hydrogen Knudsen compressor]  
+* https://github.com/xqb-python/Dimensional-Analysis[Dimensional-Analysis repository]  
+* See their script: https://github.com/xqb-python/Dimensional-Analysis/blob/main/%E4%B8%AD%E5%BF%83%E5%9E%82%E7%9B%B4%E7%BA%BF%E4%B8%8A%E7%9A%84%E9%80%9F%E5%BA%A6%E5%88%86%E5%B8%83/%E6%9C%80%E5%A4%A7%E6%BB%91%E7%A7%BB%E9%80%9F%E5%BA%A6.py[Hydrogen Knudsen Compressor Code]
 
-  * https://github.com/xqb-python/Dimensional-Analysis[Dimensional-Analysis repository]  
+=== Optimierung von Stahlgießprozessen
 
-  * See their script: https://github.com/xqb-python/Dimensional-Analysis/blob/main/%E4%B8%AD%E5%BF%83%E5%9E%82%E7%9B%B4%E7%BA%BF%E4%B8%8A%E7%9A%84%E9%80%9F%E5%BA%A6%E5%88%86%E5%B8%83/%E6%9C%80%E5%A4%A7%E6%BB%91%E7%A7%BB%E9%80%9F%E5%BA%A6.py[Hydrogen Knudsen Compressor Code]
+From Lichtenberg (2021) "Optimierung von Stahlgießprozessen anhand eines Wassermodells mit begleitender Strömungssimulation"  
 
-*Optimierung von Stahlgießprozessen*  
+* https://repo.bibliothek.uni-halle.de/handle/1981185920/87855[Dissertation repository]
 
-– From Lichtenberg (2021) “Optimierung von Stahlgießprozessen anhand eines Wassermodells mit begleitender Strömungssimulation”  
+=== Several More Problems
 
-  * https://repo.bibliothek.uni-halle.de/handle/1981185920/87855[Dissertation repository]
+==== Forced Convection over a Cylinder
+* Variables: `['Nu', 'Re', 'Pr', 'L/D', 'k', 'rho', 'c_p', 'mu']`
+* Dimension matrix:
++
+----
+[   0,  0,  0,   0,   1,    1,   0,    1]   # M
+[   0,  0,  0,   0,   1,   -3,   2,   -1]   # L
+[   0,  0,  0,   0,  -3,    0,  -2,   -1]   # T
+[   0,  0,  0,   0,  -1,    0,  -1,    0]   # Θ
+----
+* Dimensions: `['M','L','T','Θ']`
+* Target: `Nu`
 
-*Several more Problems*
+==== Natural Convection from a Horizontal Plate
+* Variables: `['Nu', 'Gr', 'Pr', 'L', 'beta', 'DeltaT', 'rho', 'mu', 'k', 'g']`
+* Dimension matrix:
++
+----
+[   0,  0,  0,   0,   0,   0,   1,    1,   1,   0]  # M
+[   0,  0,  0,   1,   0,   0,  -3,   -1,   1,   1]  # L
+[   0,  0,  0,   0,   0,   0,   0,   -1,  -3,  -2]  # T
+[   0,  0,  0,   0,  -1,   1,   0,    0,  -1,   0]  # Θ
+----
+* Dimensions: `['M','L','T','Θ']`
+* Target: `Nu`
 
-* Forced Convection over a Cylinder
-  + Variables: `['Nu', 'Re', 'Pr', 'L/D', 'k', 'rho', 'c_p', 'mu']`
-  + Dimension matrix:
-    ```
-    [   0,  0,  0,   0,   1,    1,   0,    1]   # M
-    [   0,  0,  0,   0,   1,   -3,   2,   -1]   # L
-    [   0,  0,  0,   0,  -3,    0,  -2,   -1]   # T
-    [   0,  0,  0,   0,  -1,    0,  -1,    0]   # Θ
-    ```
-  + Dimensions: `['M','L','T','Θ']`
-  + Target: `Nu`
+==== Packed-Bed Pressure Drop (Ergun)
+* Variables: `['DeltaP','rho','mu','U','D_p','epsilon','L']`
+* Dimension matrix:
++
+----
+[    1,   1,  1,  0,  0,  0, 0]  # M
+[   -1,  -3, -1,  1,  1,  0, 1]  # L
+[   -2,   0, -1, -1,  0,  0, 0]  # T
+----
+* Dimensions: `['M','L','T']`
+* Target: `DeltaP`
 
-* Natural Convection from a Horizontal Plate
-  + Variables: `['Nu', 'Gr', 'Pr', 'L', 'beta', 'DeltaT', 'rho', 'mu', 'k', 'g']`
-  + Dimension matrix:
-    ```
-    [   0,  0,  0,   0,   0,   0,   1,    1,   1,   0]  # M
-    [   0,  0,  0,   1,   0,   0,  -3,   -1,   1,   1]  # L
-    [   0,  0,  0,   0,   0,   0,   0,   -1,  -3,  -2]  # T
-    [   0,  0,  0,   0,  -1,   1,   0,    0,  -1,   0]  # Θ
-    ```
-  + Dimensions: `['M','L','T','Θ']`
-  + Target: `Nu`
+==== Stirred-Tank Mixing (Power Number)
+* Variables: `['P','rho','N','D','mu','sigma']`
+* Dimension matrix:
++
+----
+[   1,   1, 0, 0,  1,     1]  # M
+[   2,  -3, 0, 1, -1,     0]  # L
+[  -3,   0, -1,0, -1,    -2]  # T
+[   0,   0, 0, 0,  0,     0]  # Θ
+----
+* Dimensions: `['M','L','T','Θ']`
+* Target: `P`
 
-* Packed-Bed Pressure Drop (Ergun)
-  + Variables: `['DeltaP','rho','mu','U','D_p','epsilon','L']`
-  + Dimension matrix:
-    ```
-    [    1,   1,  1,  0,  0,  0, 0]  # M
-    [   -1,  -3, -1,  1,  1,  0, 1]  # L
-    [   -2,   0, -1, -1,  0,  0, 0]  # T
-    ```
-  + Dimensions: `['M','L','T']`
-  + Target: `DeltaP`
+==== Rayleigh–Bénard Convection
+* Variables: `['Nu','Ra','Pr','H','k','rho','c_p','mu','g','beta','DeltaT']`
+* Dimension matrix:
++
+----
+[   0,  0, 0, 0,   1,    1,    0,    1,   0,   0,  0]  # M
+[   0,  0, 0, 1,   1,   -3,    2,   -1,   1,   0,  0]  # L
+[   0,  0, 0, 0,  -3,    0,   -2,   -1,  -2,   0,  0]  # T
+[   0,  0, 0, 0,  -1,    0,   -1,    0,   0,  -1,  1]  # Θ
+----
+* Dimensions: `['M','L','T','Θ']`
+* Target: `Nu`
 
-* Stirred-Tank Mixing (Power Number)
-  + Variables: `['P','rho','N','D','mu','sigma']`
-  + Dimension matrix:
-    ```
-    [   1,   1, 0, 0,  1,     1]  # M
-    [   2,  -3, 0, 1, -1,     0]  # L
-    [  -3,   0, -1,0, -1,    -2]  # T
-    [   0,   0, 0, 0,  0,     0]  # Θ
-    ```
-  + Dimensions: `['M','L','T','Θ']`
-  + Target: `P`
+==== Drop Dynamics in Shear (Ca, Re)
+* Variables: `['d','mu_c','mu_d','sigma','G','rho_c','rho_d']`
+* Dimension matrix:
++
+----
+[  0,   1,   1,     1,   0,     1,     1]  # M
+[  1,  -1,  -1,     0,   0,    -3,    -3]  # L
+[  0,  -1,  -1,    -2,  -1,     0,     0]  # T
+----
+* Dimensions: `['M','L','T']`
+* Target: `d`
 
-* Rayleigh–Bénard Convection
-  + Variables: `['Nu','Ra','Pr','H','k','rho','c_p','mu','g','beta','DeltaT']`
-  + Dimension matrix:
-    ```
-    [   0,  0, 0, 0,   1,    1,    0,    1,   0,   0,  0]  # M
-    [   0,  0, 0, 1,   1,   -3,    2,   -1,   1,   0,  0]  # L
-    [   0,  0, 0, 0,  -3,    0,   -2,   -1,  -2,   0,  0]  # T
-    [   0,  0, 0, 0,  -1,    0,   -1,    0,   0,  -1,  1]  # Θ
-    ```
-  + Dimensions: `['M','L','T','Θ']`
-  + Target: `Nu`
+==== MHD Duct Flow
+* Variables: `['Ha','Re','sigma_e','B','L','rho','mu']`
+* Dimension matrix:
++
+----
+[   0,  0, -1,  1,  0,  1, 1]  # M
+[   0,  0, -3,  0,  1, -3,-1]  # L
+[   0,  0,  3, -2,  0,  0,-1]  # T
+[   0,  0,  2, -1,  0,  0, 0]  # I
+----
+* Dimensions: `['M','L','T','I']`
+* Target: `Ha`
 
-* Drop Dynamics in Shear (Ca, Re)
-  + Variables: `['d','mu_c','mu_d','sigma','G','rho_c','rho_d']`
-  + Dimension matrix:
-    ```
-    [  0,   1,   1,     1,   0,     1,     1]  # M
-    [  1,  -1,  -1,     0,   0,    -3,    -3]  # L
-    [  0,  -1,  -1,    -2,  -1,     0,     0]  # T
-    ```
-  + Dimensions: `['M','L','T']`
-  + Target: `d`
+==== Aeroacoustic Dipole Radiation
+* Variables: `['p_prime','rho','U','L','c','omega','l']`
+* Dimension matrix:
++
+----
+[    1,  1, 0,  0,  0,   0, 0]  # M
+[   -1, -3, 1,  1,  1,   0, 1]  # L
+[   -2,  0, -1, 0, -1,  -1, 0]  # T
+----
+* Dimensions: `['M','L','T']`
+* Target: `p_prime`
 
-* MHD Duct Flow
-  + Variables: `['Ha','Re','sigma_e','B','L','rho','mu']`
-  + Dimension matrix:
-    ```
-    [   0,  0, -1,  1,  0,  1, 1]  # M
-    [   0,  0, -3,  0,  1, -3,-1]  # L
-    [   0,  0,  3, -2,  0,  0,-1]  # T
-    [   0,  0,  2, -1,  0,  0, 0]  # I
-    ```
-  + Dimensions: `['M','L','T','I']`
-  + Target: `Ha`
+==== Laminar Forced-Convection over a Cylinder
+* Variables: `['h','D','k','U','mu','rho','c_p']`
+* Dimension matrix:
++
+----
+[   1,  0,  1,  0,   1,   1,   0]   # M
+[  -2,  1,  1,  1,  -1,  -3,   2]   # L
+[  -3,  0, -3, -1,  -1,   0,  -2]   # T
+[  -1,  0, -1,  0,   0,   0,  -1]   # Θ
+----
+* Dimensions: `['M','L','T','Θ']`
+* Target: `h`
 
-* Aeroacoustic Dipole Radiation
-  + Variables: `['p_prime','rho','U','L','c','omega','l']`
-  + Dimension matrix:
-    ```
-    [    1,  1, 0,  0,  0,   0, 0]  # M
-    [   -1, -3, 1,  1,  1,   0, 1]  # L
-    [   -2,  0, -1, 0, -1,  -1, 0]  # T
-    ```
-  + Dimensions: `['M','L','T']`
-  + Target: `p_prime`
-
-* Laminar Forced-Convection over a Cylinder
-  + Variables: `['h','D','k','U','mu','rho','c_p']`
-  + Dimension matrix:
-    ```
-    [   1,  0,  1,  0,   1,   1,   0]   # M
-    [  -2,  1,  1,  1,  -1,  -3,   2]   # L
-    [  -3,  0, -3, -1,  -1,   0,  -2]   # T
-    [  -1,  0, -1,  0,   0,   0,  -1]   # Θ
-    ```
-  + Dimensions: `['M','L','T','Θ']`
-  + Target: `h`
-
-== Python scripts
+== Python Scripts
 
 Three complementary approaches are provided:
 
@@ -170,26 +185,24 @@ Three complementary approaches are provided:
   Uses https://github.com/saadgroup/BuckinghamPy[BuckinghamPy] to enumerate all valid π-groups.
 
 * https://github.com/dietmarwo/BuckinghamExamples/blob/master/rank_pi_groups.py[rank_pi_groups.py]  
-  Uses NumPy and scikit-learn to  
-  1. find all repeating-variable sets,  
-  2. compute their π-groups,  
-  3. score each set by the predictive R² adding a penalty for bad coefficient-of-variation over your experimental range.
+  Uses NumPy and scikit-learn to:
+  . Find all repeating-variable sets
+  . Compute their π-groups
+  . Score each set by the predictive R² adding a penalty for bad coefficient-of-variation over your experimental range
 
 * https://github.com/dietmarwo/BuckinghamExamples/blob/master/optimize_pi_groups.py[optimize_pi_groups.py]  
-  1. Uses https://github.com/dietmarwo/fast-cma-es[fcmaes] to apply the https://github.com/avaneev/biteopt[biteopt] evolutionary
-  algorithm to vary the pi group exponents, allowing continuous values.   
-  2. score each set of pi group exponents by the predictive R² adding a penalty for bad coefficient-of-variation over your experimental range.
+  . Uses https://github.com/dietmarwo/fast-cma-es[fcmaes] to apply the https://github.com/avaneev/biteopt[biteopt] evolutionary algorithm to vary the pi group exponents, allowing continuous values
+  . Score each set of pi group exponents by the predictive R² adding a penalty for bad coefficient-of-variation over your experimental range
 
 === Customization
 
-1. **Add your own examples** to the `examples` dict (variable names + dimension matrix).    
-2. **Plug in your real data** (in place of the random sampling) to get π-group rankings tailored to your experiment.
+. *Add your own examples* to the `examples` dict (variable names + dimension matrix)
+. *Plug in your real data* (in place of the random sampling) to get π-group rankings tailored to your experiment
 
-== Further comparison
+== Further Comparison
 
 Compare with:  
-https://github.com/xqb-python/Dimensional-Analysis/blob/main/%E4%B8%AD%E5%BF%83%E5%9E%82%E7%9B%B4%E7%BA%BF%E4%B8%8A%E7%9A%84%E9%80%9F%E5%BA%A6%E5%88%86%E5%B8%83/%E6%9C%80%E5%A4%A7%E6%BB%91%E7%A7%BB%E9%80%9F%E5%BA%A6.py[Hydrogen Knudsen Compressor Code], which uses genetic optimization. GA doesn't work well for this application, specially if you allow continuous exponents. https://www.ijche.com/article_10200_e5d7175834c141c6c71c4fe626ec5cb4.pdf[ijche2014] applies CMA-ES, but is focused on a specific problem.
-
+https://github.com/xqb-python/Dimensional-Analysis/blob/main/%E4%B8%AD%E5%BF%83%E5%9E%82%E7%9B%B4%E7%BA%BF%E4%B8%8A%E7%9A%84%E9%80%9F%E5%BA%A6%E5%88%86%E5%B8%83/%E6%9C%80%E5%A4%A7%E6%BB%91%E7%A7%BB%E9%80%9F%E5%BA%A6.py[Hydrogen Knudsen Compressor Code], which uses genetic optimization. GA doesn't work well for this application, especially if you allow continuous exponents. https://www.ijche.com/article_10200_e5d7175834c141c6c71c4fe626ec5cb4.pdf[ijche2014] applies CMA-ES, but is focused on a specific problem.
 
 == Continuous-Exponent π-Group Pipeline
 
@@ -197,51 +210,40 @@ Typically, π-group determination necessitates an initial discrete, combinatoria
 
 === 1. Dimensional Homogeneity and Nullspace Equivalence
 
-Any exponent vector stem:[E ∈ ℝ^n] that renders stem:[∏_{i=1}^N x_i^{E_i}] dimensionless must satisfy stem:[A·E = 0].
+Any exponent vector latexmath:[E \in \mathbb{R}^n] that renders latexmath:[\prod_{i=1}^N x_i^{E_i}] dimensionless must satisfy latexmath:[A \cdot E = 0].
 
-Computing stem:[N_s = \text{nullspace}(A)] yields an orthonormal basis of that nullspace (with shape stem:[N×k]), enabling any valid stem:[E] to be expressed as stem:[E = N_s · c] for some coefficient vector stem:[c ∈ ℝ^k].
+Computing latexmath:[N_s = \text{null}(A)] yields an orthonormal basis of that nullspace (with shape latexmath:[N \times k]), enabling any valid latexmath:[E] to be expressed as latexmath:[E = N_s \cdot c] for some coefficient vector latexmath:[c \in \mathbb{R}^k].
 
 === 2. Construction of m π-Groups
 
-To construct m π-groups, select a stem:[k×m] matrix stem:[C] whose columns represent the stem:[c] vectors for each π-group. Compute stem:[E = N_s · C] (an stem:[N×m] matrix) and construct the π-features: stem:[Π_{:,j} = \exp(\log(X) · E_{:,j})].
+To construct m π-groups, select a latexmath:[k \times m] matrix latexmath:[C] whose columns represent the latexmath:[c] vectors for each π-group. Compute latexmath:[E = N_s \cdot C] (an latexmath:[N \times m] matrix) and construct the π-features: latexmath:[\Pi_{:,j} = \exp(\log(X) \cdot E_{:,j})].
 
 These π-terms are guaranteed to be dimensionless by construction.
 
 === 3. Continuous Optimization Framework
 
-The approach formulates a single continuous optimization problem over the entries of stem:[C ∈ ℝ^{k×m}], maximizing stem:[R^2] (adjusted for cross-validation penalty). The evolutionary optimizer explores stem:[ℝ^{k·m}], implicitly investigating all possible combinations of the k basis vectors into m groups.
+The approach formulates a single continuous optimization problem over the entries of latexmath:[C \in \mathbb{R}^{k \times m}], maximizing latexmath:[R^2] (adjusted for cross-validation penalty). The evolutionary optimizer explores latexmath:[\mathbb{R}^{k \cdot m}], implicitly investigating all possible combinations of the k basis vectors into m groups.
 
-This eliminates the need for discrete enumeration of variable subsets—the continuous weights in stem:[C] determine each variable's exponent coefficient.
+This eliminates the need for discrete enumeration of variable subsets—the continuous weights in latexmath:[C] determine each variable's exponent coefficient.
 
-Since stem:[E = N_s·C] enforces stem:[A·E = 0], every continuous trial stem:[C] produces a valid π-group configuration. The combinatorial challenge of "which variables belong to π₁ versus π₂" is resolved implicitly through the optimizer's identification of optimal continuous weights, rather than through manual subset enumeration.
+Since latexmath:[E = N_s \cdot C] enforces latexmath:[A \cdot E = 0], every continuous trial latexmath:[C] produces a valid π-group configuration. The combinatorial challenge of "which variables belong to π₁ versus π₂" is resolved implicitly through the optimizer's identification of optimal continuous weights, rather than through manual subset enumeration.
 
-[NOTE]
-====
-The optimization library employed (https://github.com/dietmarwo/fast-cma-es[fcmaes]) supports CMA-ES and various other established algorithms. Substituting the current implementation requires only a single line change. BiteOpt was selected for its superior flexibility:
+NOTE: The optimization library employed (https://github.com/dietmarwo/fast-cma-es[fcmaes]) supports CMA-ES and various other established algorithms. Substituting the current implementation requires only a single line change. BiteOpt was selected for its superior flexibility:
 
 * Maintains success statistics (tracking which mutation scales generate actual improvements)
 * Dynamically re-weights proposal distributions based on performance statistics  
 * Automatically balances exploration versus exploitation as the optimization landscape evolves
 
-=== Citing
+== Citing
 
-[source]
+[source,bibtex]
 ----
 @misc{buckpiexams2025,
   author       = {Dietmar Wolz},
-  title        = {Example Applications of the Buckingham–Pi Theorem},
+  title        = {Example Applications of the Buckingham-Pi Theorem},
   year         = {2025},
   publisher    = {GitHub},
   journal      = {GitHub repository},
   howpublished = {Available at \url{https://github.com/dietmarwo/BuckinghamExamples}},
 }
-
-
-
-
-
-
-
-
-
-
+----
