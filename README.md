@@ -254,20 +254,12 @@ with perfect collapse $R^2=1.00$. To design a two-knob sweep:
 
 1. Select four pivot conditions $\{D_0,k_0,U_0,\mu_0\}$ (or any four independent variables) and hold them fixed.
 
-2. Vary $(\pi_1,\pi_2)$ over a 2D grid in log-space, computing the corresponding physical parameters by solving the two linear systems
+2. Vary $(\pi_1,\pi_2)$ over a 2D grid in log-space, computing the corresponding physical parameters by solving the linear system
    
-   $$\log
-   \begin{pmatrix}
-   D \\ k \\ U \\ \mu \\ \rho \\ c_p
-   \end{pmatrix}
-   = N_s \cdot C \cdot
-   \begin{pmatrix}
-   \log \pi_1 \\ 
-   \log \pi_2
-   \end{pmatrix}$$
+   $$\log(D, k, U, \mu, \rho, c_p)^T = N_s \cdot C \cdot (\log \pi_1, \log \pi_2)^T$$
    
    while keeping the pivots constant.
-
+   
 3. Measure $Nu$ for each $(\pi_1,\pi_2)$ combination and verify that
    $\log(Nu)$ collapses onto a smooth surface in the $(\log\pi_1,\log\pi_2)$ plane.
 
