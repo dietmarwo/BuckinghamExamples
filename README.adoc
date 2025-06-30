@@ -2,6 +2,35 @@
 
 This repository collects a variety of worked examples from the literature, demonstrating how to apply the Buckingham–Pi theorem in Python.
 
+== Motivation
+
+Dimensional analysis is a foundational tool in the physical sciences and engineering: by identifying combinations of variables that are truly dimensionless, we collapse complex phenomena onto universal scaling laws, reduce the experimental burden, and reveal the underlying structure of physical models. At its core lies the Buckingham π theorem, which tells us that any physically meaningful equation can be rewritten in terms of a smaller set of independent, dimensionless groups (the “π-groups”) whose exponents satisfy the homogeneity condition A·E = 0.
+
+Historically, two main approaches have been used:
+
+* Enumerative (combinatorial) methods
+** Systematically generate every integer-exponent nullspace vector  
+** Enumerate subsets of these π-groups to discover minimal complete sets  
+** Manually inspect each candidate for physical interpretability  
+
+* Continuous-exponent (optimization) methods
+** Recognize that real-valued exponent vectors also satisfy A·E = 0  
+** Use log-domain regression or evolutionary algorithms to fit continuous powers that maximize data collapse (R²) under variance constraints  
+** Allow subtle, non-integer scalings that often yield superior empirical fits  
+
+Originally, continuous exponents were extracted by hand from experimental log-plots—researchers would sweep one candidate π-group, hold others fixed, and iteratively tweak exponents until curves overlapped. Modern work has automated this tedious loop by embedding the nullspace basis into an evolutionary optimizer (e.g., GA, CMA-ES, BiteOpt). By parameterizing
+E = Nₛ · C (where Nₛ is the orthonormal nullspace of the dimension matrix A and C ∈ ℝᵏˣᵐ contains the continuous weights), one can pose a single smooth optimization over C to discover the best m π-groups in one go.
+
+**BuckinghamExamples** brings these ideas together in an open-source, Python-based toolkit. It:
+
+* Enumerates all classic integer π-groups for canonical fluid-mechanics and heat-transfer problems  
+* Optimizes continuous exponents for maximal data collapse under cross-validation  
+* Automates the switch between enumeration and optimization, letting you explore m = 1, 2, …, k nullspace dimensions without manual algebra  
+
+Whether you prefer the pedagogical clarity of integer π-groups or the empirical accuracy of continuous scalings, 
+this repository provides a turnkey platform for rigorous, reproducible dimensional analysis.
+
+
 == Examples
 
 *From BuckinghamPy*  
@@ -161,35 +190,38 @@ Three complementary approaches are provided:
 Compare with:  
 https://github.com/xqb-python/Dimensional-Analysis/blob/main/%E4%B8%AD%E5%BF%83%E5%9E%82%E7%9B%B4%E7%BA%BF%E4%B8%8A%E7%9A%84%E9%80%9F%E5%BA%A6%E5%88%86%E5%B8%83/%E6%9C%80%E5%A4%A7%E6%BB%91%E7%A7%BB%E9%80%9F%E5%BA%A6.py[Hydrogen Knudsen Compressor Code], which uses genetic optimization. GA doesn't work well for this application, specially if you allow continuous exponents. https://www.ijche.com/article_10200_e5d7175834c141c6c71c4fe626ec5cb4.pdf[ijche2014] applies CMA-ES, but is focused on a specific problem.
 
+
 == Continuous-Exponent π-Group Pipeline
 
-Usually π-group determination requires, as a first step, choosing which variables go into which π-group (or whether to include a third group at all)—a discrete, combinatorial choice. The continuous-exponent pipeline implemented below never explicitly “chooses” which variables go into which π-group the way subset-enumeration code does. Instead, it relies on the fact that:
+Typically, π-group determination necessitates an initial discrete, combinatorial decision: selecting which variables belong to which π-group (or determining whether to incorporate an additional group). The continuous-exponent pipeline described below circumvents explicit variable assignment to π-groups, unlike subset-enumeration approaches. Instead, it leverages the following principles:
 
-1. Dimensional homogeneity ⇔ Nullspace  
-  Any exponent vector `E ∈ ℝⁿ` that makes '∏_{i=1}^N x_i^{E_i}' dimensionless must satisfy `A·E = 0`. 
-  Computing `Ns = nullspace(A)` gives an orthonormal basis of that nullspace (shape `N×k`), 
-  so every valid `E` can be written as 'E = Ns · c' for some coefficient vector `c ∈ ℝᵏ`.
+=== 1. Dimensional Homogeneity and Nullspace Equivalence
 
-2. Stacking into m π-groups  
-	If you want m π-groups, choose a `k×m` matrix `C` whose columns are the `c` vectors for each π-group, 
-	compute 'E = Ns · C' (an N×m matrix) and then build your π-features: 'Π_{:,j} = exp(log(X) · E_{:,j})'.
-    These Πs are guaranteed dimensionless by construction.
+Any exponent vector stem:[E ∈ ℝ^n] that renders stem:[∏_{i=1}^N x_i^{E_i}] dimensionless must satisfy stem:[A·E = 0].
 
-3. Continuous optimization over C  
-Frame a single continuous optimization problem over the entries of `C ∈ ℝ^{k×m}`, maximizing R² (minus your CV penalty). The evolutionary optimizer wanders around `ℝ^{k·m}`, implicitly exploring all ways of mixing the k basis-vectors into m groups. 
-No discrete enumeration of “which subset of variables” is needed—the continuous weights in `C` dial in each variable’s exponent.
+Computing stem:[N_s = \text{nullspace}(A)] yields an orthonormal basis of that nullspace (with shape stem:[N×k]), enabling any valid stem:[E] to be expressed as stem:[E = N_s · c] for some coefficient vector stem:[c ∈ ℝ^k].
 
-Because `E = Ns·C` enforces `A·E = 0`, every continuous trial `C` yields a valid set of π-groups. 
-The combinatorial question “which variables in π₁ vs π₂” is thus solved implicitly 
-by the optimizer finding the best continuous weights, not by manual subset enumeration.  
+=== 2. Construction of m π-Groups
 
-NOTE: The optimization library used (https://github.com/dietmarwo/fast-cma-es[fcmaes]) supports CMA-ES and several other established algorithms. 
-Replacing the one used is a one-liner, but BiteOpt was chosen because of its superior flexibility:
+To construct m π-groups, select a stem:[k×m] matrix stem:[C] whose columns represent the stem:[c] vectors for each π-group. Compute stem:[E = N_s · C] (an stem:[N×m] matrix) and construct the π-features: stem:[Π_{:,j} = \exp(\log(X) · E_{:,j})].
 
-- Tracks success statistics (e.g. which mutation scales actually produce improvements)
-- Re-weights its proposal distributions “on the fly” based on those stats
-- Balances exploration vs. exploitation automatically as the landscape changes
+These π-terms are guaranteed to be dimensionless by construction.
 
+=== 3. Continuous Optimization Framework
+
+The approach formulates a single continuous optimization problem over the entries of stem:[C ∈ ℝ^{k×m}], maximizing stem:[R^2] (adjusted for cross-validation penalty). The evolutionary optimizer explores stem:[ℝ^{k·m}], implicitly investigating all possible combinations of the k basis vectors into m groups.
+
+This eliminates the need for discrete enumeration of variable subsets—the continuous weights in stem:[C] determine each variable's exponent coefficient.
+
+Since stem:[E = N_s·C] enforces stem:[A·E = 0], every continuous trial stem:[C] produces a valid π-group configuration. The combinatorial challenge of "which variables belong to π₁ versus π₂" is resolved implicitly through the optimizer's identification of optimal continuous weights, rather than through manual subset enumeration.
+
+[NOTE]
+====
+The optimization library employed (https://github.com/dietmarwo/fast-cma-es[fcmaes]) supports CMA-ES and various other established algorithms. Substituting the current implementation requires only a single line change. BiteOpt was selected for its superior flexibility:
+
+* Maintains success statistics (tracking which mutation scales generate actual improvements)
+* Dynamically re-weights proposal distributions based on performance statistics  
+* Automatically balances exploration versus exploitation as the optimization landscape evolves
 
 === Citing
 

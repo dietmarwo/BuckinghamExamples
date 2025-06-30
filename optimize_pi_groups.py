@@ -17,50 +17,50 @@
 # which applies CMA-ES. But it is focused on a specific problem, where our approach is more general, applied
 # here to about 20 distinct problems
 #
-# Usually π-group determination requires as a first step to determine which variables should go into which π-group₂ 
-# (or whether to include a third group at all) which is a discrete, combinatorial choice.
+# Typically, π-group determination necessitates an initial discrete, combinatorial decision: 
+# selecting which variables belong to which π-group (or determining whether to incorporate 
+# an additional group). The continuous-exponent pipeline described below circumvents explicit 
+# variable assignment to π-groups, unlike subset-enumeration approaches. Instead, it 
+# leverages the following principles:
 #
-# The continuous‐exponent pipeline implemented below never explicitly “chooses” which 
-# variables go into which π-group the way the combinatorial subset‐enumeration code does. 
+# 1. Dimensional Homogeneity and Nullspace Equivalence
 #
-# Instead, it relies on the fact that:
+# Any exponent vector E ∈ ℝⁿ that renders ∏ᵢ₌₁ᴺ xᵢᴱⁱ dimensionless must satisfy A·E = 0.
 #
-#   1) Dimensional homogeneity ⇔ Nullspace:
-#   Any exponent vector E ∈ ℝⁿ that makes
-#       ∏_{i=1}^N x_i^{E_i}
-#   dimensionless must satisfy A E = 0.
+# Computing Nₛ = nullspace(A) yields an orthonormal basis of that nullspace (with shape N×k), 
+# enabling any valid E to be expressed as E = Nₛ · c for some coefficient vector c ∈ ℝᵏ.
 #
-#   Computing Ns = nullspace(A) gives you an orthonormal basis of that nullspace (shape N×k),
-#   so every valid E can be written as
-#       E = Ns · c
-#   for some coefficient vector c ∈ ℝᵏ.
+# 2. Construction of m π-Groups
 #
-#   2) Stacking into m π-groups:
-#   If you want m π-groups, you choose a k×m matrix C whose columns are the c vectors 
-#   for each π-group, compute
-#       E = Ns · C   (an N×m matrix),
-#   and then your π-features are
-#       Π_{:,j} = exp(log(X) · E_{:,j})
-#   These Πs are guaranteed to be dimensionless by construction.
+# To construct m π-groups, select a k×m matrix C whose columns represent the c vectors 
+# for each π-group. Compute E = Nₛ · C (an N×m matrix) and construct the π-features: 
+# Π₍₊,ⱼ₎ = exp(log(X) · E₍₊,ⱼ₎).
 #
-#   3) Continuous optimization over C:
-#   You then frame a single continuous optimization problem over the entries of C ∈ ℝ^{k×m},
-#   maximizing R² (minus your CV penalty). The evolutionary optimizer wanders around ℝ^{k·m},
-#   implicitly exploring all ways of mixing the k basis-vectors into m groups. There is no need
-#   to discretely enumerate “which subset of variables” – the continuous weights in C merely
-#   dial in each variable’s exponent.
+# These π-terms are guaranteed to be dimensionless by construction.
 #
-#   Because E = Ns·C enforces A E = 0, every continuous trial C yields a valid set of π-groups.
-#   The combinatorial question “which variables in π₁ vs π₂” is therefore solved implicitly
-#   by the optimizer finding the best continuous weights, not by manual subset enumeration.
+# 3. Continuous Optimization Framework
 #
-# Note that the optimization library used https://github.com/dietmarwo/fast-cma-es supports CMA-ES 
-# and several other established algorithms. 
+# The approach formulates a single continuous optimization problem over the entries of 
+# C ∈ ℝᵏˣᵐ, maximizing R² (adjusted for cross-validation penalty). The evolutionary 
+# optimizer explores ℝᵏ·ᵐ, implicitly investigating all possible combinations of the 
+# k basis vectors into m groups.
 #
-# Replacing the one used is a one-liner, but BiteOpt was chosen because of its superior flexibility:  
-# - Tracks success statistics (e.g. which mutation scales actually produce improvements)
-# - Re-weights its proposal distributions “on the fly” based on those stats
-# - Balances exploration vs. exploitation automatically as the landscape changes
+# This eliminates the need for discrete enumeration of variable subsets—the continuous 
+# weights in C determine each variable's exponent coefficient.
+#
+# Since E = Nₛ·C enforces A·E = 0, every continuous trial C produces a valid π-group 
+# configuration. The combinatorial challenge of "which variables belong to π₁ versus π₂" 
+# is resolved implicitly through the optimizer's identification of optimal continuous 
+# weights, rather than through manual subset enumeration.
+#
+# NOTE: The optimization library employed (https://github.com/dietmarwo/fast-cma-es) 
+# supports CMA-ES and various other established algorithms. Substituting the current 
+# implementation requires only a single line change. BiteOpt was selected for its 
+# superior flexibility:
+#
+# - Maintains success statistics (tracking which mutation scales generate actual improvements)
+# - Dynamically re-weights proposal distributions based on performance statistics  
+# - Automatically balances exploration versus exploitation as the optimization landscape evolves
 
 import sys
 import numpy as np
