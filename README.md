@@ -284,9 +284,9 @@ is full rank (i.e., those four rows are linearly independent).
    *Example:* $D, k, U, \mu$.
 
 2. **Clamp them** at fixed values in your experiment or simulation:  
-   $$D = D_0,\quad k = k_0,\quad U = U_0,\quad \mu = \mu_0$$
+   $$D = D_0, \quad k = k_0, \quad U = U_0, \quad \mu = \mu_0$$
 
-3. **Solve for the remaining two variables** $\rho$ and $c_p$ by inverting the following $4\times 4$ system in the log-domain:
+3. **Solve for the remaining two variables** $\rho$ and $c_p$ by inverting the following $4 \times 4$ system in the log-domain:
 
    $$\begin{bmatrix}
    e_{D,1} & e_{D,2} \\
@@ -294,25 +294,33 @@ is full rank (i.e., those four rows are linearly independent).
    e_{U,1} & e_{U,2} \\
    e_{\mu,1} & e_{\mu,2}
    \end{bmatrix}
-   \begin{bmatrix}\log\pi_1\\\log\pi_2\end{bmatrix}
+   \begin{bmatrix}
+   \log\pi_1 \\
+   \log\pi_2
+   \end{bmatrix}
    +
-   \begin{bmatrix}0\\0\\0\\0\end{bmatrix}
+   \begin{bmatrix}
+   0 \\ 0 \\ 0 \\ 0
+   \end{bmatrix}
    =
    \begin{bmatrix}
-   \log D_0\\
-   \log k_0\\
-   \log U_0\\
+   \log D_0 \\
+   \log k_0 \\
+   \log U_0 \\
    \log \mu_0
    \end{bmatrix}
    +
    \begin{bmatrix}
-   e_{\rho,1} & e_{\rho,2}\\
+   e_{\rho,1} & e_{\rho,2} \\
    e_{c_p,1} & e_{c_p,2}
    \end{bmatrix}
-   \begin{bmatrix}\log\rho\\ \log c_p\end{bmatrix}$$
+   \begin{bmatrix}
+   \log\rho \\
+   \log c_p
+   \end{bmatrix}$$
 
-   Invert this to recover $\log\rho$ and $\log c_p$ as functions of your chosen $(\pi_1,\pi_2)$.
-
+   Invert this to recover $\log\rho$ and $\log c_p$ as functions of your chosen $(\pi_1, \pi_2)$.
+   
 ---
 
 ### Does the Pivot Choice Matter?
