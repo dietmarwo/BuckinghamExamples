@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Copyright (c) Dietmar Wolz.
 #
 # This source code is licensed under the MIT license found in the
@@ -16,6 +14,7 @@ import pandas as pd
 import itertools
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
+from examples import examples, drop_zero_columns
 
 # Helpers
 
@@ -84,86 +83,17 @@ def make_unbiased_surrogate(df_x, all_reps, A, var_names, noise_scale=0.1, rng=N
 def load_data(path, var_names, dep_var):
     return pd.read_excel(path)
 
-# Define examples, now with known dependent var as 4th element ---
+def drop_zero_columns(example):
+    """
+    Remove any variable whose entire column in A is zero.
+    Returns (new_var_names, new_A, dims, target).
+    """
+    name, (var_names, A, dims, dep) = example
+    keep = ~np.all(A == 0, axis=0)
+    new_vars = [v for v, k in zip(var_names, keep) if k]
+    new_A    = A[:, keep]
+    return name, (new_vars, new_A, dims, dep)
 
-examples = {
-    "Pressure Drop in Pipe": (
-        ['Δp','R','d','μ','Q'],
-        np.array([[ 1,  0,  0,  1,  0],
-                  [-1,  1,  1, -1,  3],
-                  [-2,  0,  0, -1, -1]]),
-        'Δp'
-    ),
-    "Speed of Virus Infection": (
-        ['V_p','P_r','θ','C_a','C_e','E_fs','H'],
-        np.array([[ 0, 0, 0,  0,  0,  0, 1],
-                  [ 1, 1, 0,  3,  0, -2,-3],
-                  [-1, 0, 0, -1,  1,  0, 0],
-                  [ 0, 0, 1,  0,  0,  0, 0]]),
-        'V_p'
-    ),
-    "Economic Growth": (
-        ['P','L','ω_L','Y','r','δ'],
-        np.array([[ 1,  0,  1,  1,  0,  0],
-                  [ 0,  1, -1,  0,  0,  0],
-                  [ 0, -1,  0, -1, -1, -1]]),
-        'Y'
-    ),
-    "Pressure Inside a Bubble (M,L,T)": (
-        ['Δp','R','σ'],
-        np.array([[ 1,  0,  1],
-                  [-1,  1,  0],
-                  [-2,  0, -2]]),
-        'Δp'
-    ),
-    "Pressure Inside a Bubble (F,L)": (
-        ['Δp','R','σ'],
-        np.array([[ 1,  0,  1],
-                  [-2,  1, -1]]),
-        'Δp'
-    ),
-    "Hydrogen Knudsen Compressor": (
-        ['u','H','DeltaT','L','T0','lambda'],
-        np.array([[0, 1, 0, 1, 0, 1],
-                  [0, 0, 1, 0, 1, 0]]),
-        'u'
-    ),
-    "Centrifugal Pump": (
-        ['ΔP','R','V','Q','E','G'],
-        np.array([[ 1,  1,  1,  0,  0,  0],
-                  [-3,  2, -1,  3,  1,  0],
-                  [ 0, -3, -1, -1,  0, -1]]),
-        'ΔP'
-    ),
-    "System I (Umströmung)": (
-        ['F_W','rho','v','D','eta'],
-        np.array([[ 1,  1,  0, 0,  1],
-                  [ 1, -3,  1, 1, -1],
-                  [-2,  0, -1, 0, -1]]),
-        'F_W'
-    ),
-    "System II (Auftrieb)": (
-        ['F_A','rho_F','drho','D','eta','g'],
-        np.array([[ 1,  1,  1, 0,  1, 0],
-                  [ 1, -3, -3, 1, -1, 1],
-                  [-2,  0,  0, 0, -1,-2]]),
-        'F_A'
-    ),
-    "System IIIa (Rauhigkeit)": (
-        ['Delta_p','rho','v','D','L','k_s'],
-        np.array([[ 1,  1,  0, 0, 0, 0],
-                  [-1, -3,  1, 1, 1, 1],
-                  [-2,  0, -1, 0, 0, 0]]),
-        'Delta_p'
-    ),
-    "System IIIb (Einbauten)": (
-        ['Delta_p','rho','v','D'],
-        np.array([[ 1,  1,  0, 0],
-                  [-1, -3,  1, 1],
-                  [-2,  0, -1, 0]]),
-        'Delta_p'
-    ),
-}
 
 def rank_example(rng, name, var_names, A, dep_var, df = None, cv_floor=0.1, cv_cap=10.0, cv_pen=100.0):
 
@@ -240,23 +170,23 @@ def rank_example(rng, name, var_names, A, dep_var, df = None, cv_floor=0.1, cv_c
         'repeating_vars','π_names','exponents','complexity','mean_CV','R2','score'
     ]].to_string(index=False))
     
+
 def rank_Knudsen(rng):
     name = "Hydrogen Knudsen Compressor"
     example = name, (examples[name])
-
-    name, (var_names, A, dep_var) = example
-    df = None
-    #df = load_data("knudsen_data.xlsx", var_names, dep_var)
+    name, (var_names, A, dims, dep_var) = example
+    df = load_data("knudsen_data.xlsx", var_names, dep_var)
     rank_example(rng, name, var_names, A, dep_var, df) 
-    
-    
+        
 def main():
-    rng = np.random.default_rng(0)
+    rng = np.random.default_rng(42)
     # rank_Knudsen(rng)
     # sys.exit()
     
     for example in examples.items():
-        name, (var_names, A, dep_var) = example
+        example = name, (var_names, A, dims, dep_var) = drop_zero_columns(example)
+        name, (var_names, A, dims, dep_var) = example
+        # if not name.startswith('Laminar Forced‐Convection'): continue # execute single
         rank_example(rng, name, var_names, A, dep_var)
         
 if __name__ == "__main__":

@@ -1,28 +1,82 @@
-#!/usr/bin/env python3
-
 # Copyright (c) Dietmar Wolz.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory.
-
+#
+# To install fcmaes execute:
+# pip install fcmaes --upgrade
+#
 # Analyses several dimensional analysis examples using continuous evolutionary optimization
 # pi groups are ranked using R2 and a mean CV penalty to ensure sufficient spread.
 # Uses a generated sample dataframe, Generation trys to avoid a bias to a specific set of pi groups.
 # Replace with real experimental data as soon as you have these
-
-# To install fcmaes execute:
-# pip install fcmaes --upgrade
+#
+# Compare with https://github.com/xqb-python/Dimensional-Analysis/blob/main/%E4%B8%AD%E5%BF%83%E5%9E%82%E7%9B%B4%E7%BA%BF%E4%B8%8A%E7%9A%84%E9%80%9F%E5%BA%A6%E5%88%86%E5%B8%83/%E6%9C%80%E5%A4%A7%E6%BB%91%E7%A7%BB%E9%80%9F%E5%BA%A6.py
+# using GA instead of an evolutionary approach. 
+# Even more similar is https://www.ijche.com/article_10200_e5d7175834c141c6c71c4fe626ec5cb4.pdf
+# which applies CMA-ES. But it is focused on a specific problem, where our approach is more general, applied
+# here to about 20 distinct problems
+#
+# Usually π-group determination requires as a first step to determine which variables should go into which π-group₂ 
+# (or whether to include a third group at all) which is a discrete, combinatorial choice.
+#
+# The continuous‐exponent pipeline implemented below never explicitly “chooses” which 
+# variables go into which π-group the way the combinatorial subset‐enumeration code does. 
+#
+# Instead, it relies on the fact that:
+#
+#   1) Dimensional homogeneity ⇔ Nullspace:
+#   Any exponent vector E ∈ ℝⁿ that makes
+#       ∏_{i=1}^N x_i^{E_i}
+#   dimensionless must satisfy A E = 0.
+#
+#   Computing Ns = nullspace(A) gives you an orthonormal basis of that nullspace (shape N×k),
+#   so every valid E can be written as
+#       E = Ns · c
+#   for some coefficient vector c ∈ ℝᵏ.
+#
+#   2) Stacking into m π-groups:
+#   If you want m π-groups, you choose a k×m matrix C whose columns are the c vectors 
+#   for each π-group, compute
+#       E = Ns · C   (an N×m matrix),
+#   and then your π-features are
+#       Π_{:,j} = exp(log(X) · E_{:,j})
+#   These Πs are guaranteed to be dimensionless by construction.
+#
+#   3) Continuous optimization over C:
+#   You then frame a single continuous optimization problem over the entries of C ∈ ℝ^{k×m},
+#   maximizing R² (minus your CV penalty). The evolutionary optimizer wanders around ℝ^{k·m},
+#   implicitly exploring all ways of mixing the k basis-vectors into m groups. There is no need
+#   to discretely enumerate “which subset of variables” – the continuous weights in C merely
+#   dial in each variable’s exponent.
+#
+#   Because E = Ns·C enforces A E = 0, every continuous trial C yields a valid set of π-groups.
+#   The combinatorial question “which variables in π₁ vs π₂” is therefore solved implicitly
+#   by the optimizer finding the best continuous weights, not by manual subset enumeration.
+#
+# Note that the optimization library used https://github.com/dietmarwo/fast-cma-es supports CMA-ES 
+# and several other established algorithms. 
+#
+# Replacing the one used is a one-liner, but BiteOpt was chosen because of its superior flexibility:  
+# - Tracks success statistics (e.g. which mutation scales actually produce improvements)
+# - Re-weights its proposal distributions “on the fly” based on those stats
+# - Balances exploration vs. exploitation automatically as the landscape changes
 
 import sys
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
+from examples import examples, drop_zero_columns, remove_dependent
 
 # Toggle to integer exponents if you really want
 use_int_exponents = False
 # Remove the dependent variable from the input matrix 
 # Sometimes needs to be set to False (you have to include the dependent) if you want to find any pi groups
 use_remove_dependent = True
+use_drop_zero_columns = True
+num_retries=32 # number of restarta
+max_evals=2000 # number of evals per restart
+workers=16 # parallelisation of the restarts
 
 # --- Your evolutionary optimizer (minimizer) ---
 def evolutionary_optimizer(fitness, dim, lb, ub, **kwargs):
@@ -32,131 +86,15 @@ def evolutionary_optimizer(fitness, dim, lb, ub, **kwargs):
     from loguru import logger
     logger.remove()
     logger.add(sys.stdout, format="{time:HH:mm:ss.SS} | {level} | {message}", level="INFO")
-    max_evals = 2000
     res = retry.minimize(
         # wrapper(fitness), # for debugging to monitor the optimization progress
         fitness,
         bounds=Bounds(lb, ub),
-        num_retries=16,
+        num_retries=num_retries,
         optimizer=Bite_cpp(max_evals),
-        workers=16
+        workers=workers
     )
     return res.x
-
-# --- Problem definitions ---
-
-examples = {
-    "Pressure Drop in Pipe": (
-        ['Δp','R','d','μ','Q'],
-        np.array([
-            [ 1,  0,  0,  1,  0],   # M
-            [-1,  1,  1, -1,  3],   # L
-            [-2,  0,  0, -1, -1],   # T
-        ]),
-        ['M','L','T'],
-        'Δp'
-    ),
-    "Speed of Virus Infection": (
-        ['V_p','P_r','θ','C_a','C_e','E_fs','H'],
-        np.array([
-            [ 0,  0,  0,  0,  0,  0, 1],  # M
-            [ 1,  1,  0,  3,  0, -2,-3],  # L
-            [-1,  0,  0, -1,  1,  0, 0],  # T
-            [ 0,  0,  1,  0,  0,  0, 0],  # Θ
-        ]),
-        ['M','L','T','Θ'],
-        'V_p'
-    ),
-    "Economic Growth": (
-        ['P','L','ω_L','Y','r','δ'],
-        np.array([
-            [ 1,  0,  1,  1,  0,  0],  # K (capital)
-            [ 0,  1, -1,  0,  0,  0],  # Q (labour)
-            [ 0, -1,  0, -1, -1, -1],  # T (time)
-        ]),
-        ['K','Q','T'],
-        'Y'
-    ),
-    "Pressure Inside a Bubble (M,L,T)": (
-        ['Δp','R','σ'],
-        np.array([
-            [ 1,  0,  1],   # M
-            [-1,  1,  0],   # L
-            [-2,  0, -2],   # T
-        ]),
-        ['M','L','T'],
-        'Δp'
-    ),
-    "Pressure Inside a Bubble (F,L)": (
-        ['Δp','R','σ'],
-        np.array([
-            [ 1,  0,  1],   # F (force)
-            [-2,  1, -1],   # L (length)
-        ]),
-        ['F','L'],
-        'Δp'
-    ),
-    "Hydrogen Knudsen Compressor": (
-        ['u','H','DeltaT','L','T0','lambda'],
-        np.array([
-            [ 0,  1,  0,  1,  0,  1],  # M
-            [-1,  0,  1,  0,  1,  0],  # L
-            [ 0,  0,  0,  0,  0,  0],  # Θ (temperature enters via exponents on deltaT and T0)
-        ]),
-        ['M','L','Θ'],
-        'u'
-    ),
-    "Centrifugal Pump": (
-        ['ΔP','R','V','Q','E','G'],
-        np.array([
-            [ 1,  1,  1,  0,  0,  0],  # M
-            [-3,  2, -1,  3,  1,  0],  # L
-            [ 0, -3, -1, -1,  0, -1],  # T
-        ]),
-        ['M','L','T'],
-        'ΔP'
-    ),
-    "System I (Umströmung)": (
-        ['ΔF','rho','v','D','eta'],
-        np.array([
-            [ 1,  1,  0,  0,  1],  # M (force F has dimension M·L·T⁻², but since F is dependent we only care about the others)
-            [ 1, -3,  1,  1, -1],  # L
-            [-2,  0, -1,  0, -1],  # T
-        ]),
-        ['M','L','T'],
-        'ΔF'
-    ),
-    "System II (Auftrieb)": (
-        ['ΔF','rho_F','drho','D','eta','g'],
-        np.array([
-            [ 1,  1,  1,  0,  1,  0],  # M
-            [ 1, -3, -3,  1, -1,  1],  # L
-            [-2,  0,  0,  0, -1, -2],  # T
-        ]),
-        ['M','L','T'],
-        'ΔF'
-    ),
-    "System IIIa (Rauhigkeit)": (
-        ['Delta_p','rho','v','D','L','k_s'],
-        np.array([
-            [ 1,  1,  0,  0,  0,  0],  # M
-            [-1, -3,  1,  1,  1,  1],  # L
-            [-2,  0, -1,  0,  0,  0],  # T
-        ]),
-        ['M','L','T'],
-        'Delta_p'
-    ),
-    "System IIIb (Einbauten)": (
-        ['Delta_p','rho','eta','v','D'],
-        np.array([
-            [ 1,  1,  1,  0,  0],  # M
-            [-1, -3, -1,  1,  1],  # L
-            [-2,  0, -1,  0,  0],  # T
-        ]),
-        ['M','L','T'],
-        'Delta_p'
-    ),
-}
 
 # --- Helpers ---------------------------------------------------------
 
@@ -229,19 +167,6 @@ def compute_r2_and_E(flat_c, df_x, y, Ns, m):
     r2 = LinearRegression(fit_intercept=True).fit(Pi, y).score(Pi, y)
     return r2, E
 
-
-def remove_dependent(example):
-    name, (var_names, A, dims, dep) = example
-    if dep not in var_names:
-        raise ValueError(f"dependent var {dep!r} not in {var_names}")
-    idx = var_names.index(dep)
-    # drop the dep var from the list
-    new_vars = var_names[:idx] + var_names[idx+1:]
-    # drop the corresponding column from A
-    new_A    = np.delete(A, idx, axis=1)
-    return name, (new_vars, new_A, dims, dep)
-
-
 def optimize_example(rng, name, var_names, A, dims, dep_var, df=None):
     print(f"\n=== {name} ===")
     print("    Variables:", var_names)
@@ -280,20 +205,25 @@ def optimize_Knudsen(rng):
     example = name, (examples[name])
     example = remove_dependent(example) 
     name, (var_names, A, dims, dep_var) = example
-    df = None
-    #df = load_data("knudsen_data.xlsx", var_names, dep_var)
+    df = load_data("knudsen_data.xlsx", var_names, dep_var)
     optimize_example(rng, name, var_names, A, dims, dep_var, df) 
                 
 def main():
-    rng = np.random.default_rng(0)
+    rng = np.random.default_rng(42)
     # optimize_Knudsen(rng)
     # sys.exit()
     
     for example in examples.items():
         if use_remove_dependent:
             example = remove_dependent(example)
+        if use_drop_zero_columns:
+            example = drop_zero_columns(example)
         name, (var_names, A, dims, dep_var) = example
+        # if not name.startswith('Laminar Forced‐Convection'): continue # execute single
         optimize_example(rng, name, var_names, A, dims, dep_var)
+
+    print(f'\nremove_dependent = {use_remove_dependent}, drop_zero_columns = {use_drop_zero_columns}')
+    print(f'{num_retries} parallel restarts, {max_evals} evaluations each, {workers} workers')
 
 if __name__ == "__main__":
     main()
