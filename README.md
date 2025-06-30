@@ -320,7 +320,7 @@ is full rank (i.e., those four rows are linearly independent).
    \end{bmatrix}$$
 
    Invert this to recover $\log\rho$ and $\log c_p$ as functions of your chosen $(\pi_1, \pi_2)$.
-   
+         
 ---
 
 ### Does the Pivot Choice Matter?
