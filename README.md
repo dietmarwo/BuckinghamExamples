@@ -218,58 +218,55 @@ Since $E = N_s \cdot C$ enforces $A \cdot E = 0$, every continuous trial $C$ pro
 
 ## Application: Laminar Forced-Convection over a Cylinder
 
-Once we have optimized continuous π-groups, we can directly use them to design and collapse experimental or simulation data.  As an illustration, recall the case of forced convection over a cylinder, where our independent variables are  
-\[
-\{D,\ k,\ U,\ \mu,\ \rho,\ c_p\}
-\]  
-and the dependent response is the Nusselt number \(Nu\).  
+Once we have optimized continuous π-groups, we can directly use them to design and collapse experimental or simulation data. As an illustration, recall the case of forced convection over a cylinder, where our independent variables are
 
-### Single-π sweep (\(m=1\))
+$$\{D,\ k,\ U,\ \mu,\ \rho,\ c_p\}$$
 
-The optimizer found one dominant π-group  
-\[
-\pi_1 = D^{0.5171}\,k^{-0.1687}\,U^{0.5171}\,\mu^{-0.3485}\,\rho^{0.5171}\,c_p^{0.1687}
-\]  
-with empirical fit \(R^2=0.982\).  In practice, you can:
+and the dependent response is the Nusselt number $Nu$.
 
-1.  Compute \(\pi_1\) for each dataset:
-    \[
-    \pi_1^{(i)} = D_i^{0.5171}\,k_i^{-0.1687}\,\dots\,c_{p,i}^{0.1687}
-    \]
-2.  Plot \(\log(Nu)\) vs.\ \(\log(\pi_1)\).  If the collapse is good, all curves collapse to  
-    \[
-    \log(Nu) \approx a + b\,\log(\pi_1)\,,
-    \]  
-    allowing a two-parameter fit \((a,b)\).
+### Single-π sweep ($m=1$)
 
-3.  For quick “single-knob” experiments, sweep \(\pi_1\in[0.1,10]\) on a log scale, holding all other physical parameters fixed.  This lets you explore the physics along the dominant scaling direction.
+The optimizer found one dominant π-group
 
-### Two-π design (\(m=2\))
+$$\pi_1 = D^{0.5171}\,k^{-0.1687}\,U^{0.5171}\,\mu^{-0.3485}\,\rho^{0.5171}\,c_p^{0.1687}$$
 
-For a lossless reduction to two knobs, we include a second π-group.  The optimizer yields:
-\[
-\begin{aligned}
+with empirical fit $R^2=0.982$. In practice, you can:
+
+1. Compute $\pi_1$ for each dataset:
+   $$\pi_1^{(i)} = D_i^{0.5171}\,k_i^{-0.1687}\,\dots\,c_{p,i}^{0.1687}$$
+
+2. Plot $\log(Nu)$ vs. $\log(\pi_1)$. If the collapse is good, all curves collapse to
+   $$\log(Nu) \approx a + b\,\log(\pi_1),$$
+   allowing a two-parameter fit $(a,b)$.
+
+3. For quick "single-knob" experiments, sweep $\pi_1\in[0.1,10]$ on a log scale, holding all other physical parameters fixed. This lets you explore the physics along the dominant scaling direction.
+
+### Two-π design ($m=2$)
+
+For a lossless reduction to two knobs, we include a second π-group. The optimizer yields:
+
+$$\begin{align}
 \pi_1 &= D^{0.5222}\,k^{-0.1731}\,U^{0.5222}\,\mu^{-0.3492}\,\rho^{0.5222}\,c_p^{0.1731},\\
 \pi_2 &= D^{0.0009}\,k^{-0.5777}\,U^{0.0009}\,\mu^{0.5767}\,\rho^{0.0009}\,c_p^{0.5777},
-\end{aligned}
-\]
-with perfect collapse \(R^2=1.00\).  To design a two-knob sweep:
+\end{align}$$
 
-1.  Select four pivot conditions \(\{D_0,k_0,U_0,\mu_0\}\) (or any four independent variables) and hold them fixed.
-2.  Vary \((\pi_1,\pi_2)\) over a 2D grid in log-space, computing the corresponding physical parameters by solving the two linear systems  
-    \[
-    \log
-    \begin{pmatrix}
-    D \\ k \\ U \\ \mu \\ \rho \\ c_p
-    \end{pmatrix}
-    = N_s\,C\,
-    \begin{pmatrix}\log \pi_1 \\ \log\pi_2\end{pmatrix},
-    \]
-    while keeping the pivots constant.  
-3.  Measure \(Nu\) for each \((\pi_1,\pi_2)\) combination and verify that  
-    \(\log(Nu)\) collapses onto a smooth surface in the \((\log\pi_1,\log\pi_2)\) plane.
+with perfect collapse $R^2=1.00$. To design a two-knob sweep:
 
-In this way the continuous-exponent optimizer not only finds the optimal collapse, but also directly prescribes the experimental “knobs” (\(\pi\)-coordinates) needed for systematic studies.  
+1. Select four pivot conditions $\{D_0,k_0,U_0,\mu_0\}$ (or any four independent variables) and hold them fixed.
+
+2. Vary $(\pi_1,\pi_2)$ over a 2D grid in log-space, computing the corresponding physical parameters by solving the two linear systems
+   $$\log
+   \begin{pmatrix}
+   D \\ k \\ U \\ \mu \\ \rho \\ c_p
+   \end{pmatrix}
+   = N_s\,C\,
+   \begin{pmatrix}\log \pi_1 \\ \log\pi_2\end{pmatrix},$$
+   while keeping the pivots constant.
+
+3. Measure $Nu$ for each $(\pi_1,\pi_2)$ combination and verify that
+   $\log(Nu)$ collapses onto a smooth surface in the $(\log\pi_1,\log\pi_2)$ plane.
+
+In this way the continuous-exponent optimizer not only finds the optimal collapse, but also directly prescribes the experimental "knobs" (π-coordinates) needed for systematic studies.
 
 ## Citing
 
