@@ -65,6 +65,7 @@
 import sys
 import numpy as np
 import pandas as pd
+import multiprocessing as mp
 from sklearn.linear_model import LinearRegression
 from examples import examples, drop_zero_columns, remove_dependent
 
@@ -74,9 +75,9 @@ use_int_exponents = False
 # Sometimes needs to be set to False (you have to include the dependent) if you want to find any pi groups
 use_remove_dependent = True
 use_drop_zero_columns = True
-num_retries=32 # number of restarta
+num_retries=32 # number of restarts
 max_evals=2000 # number of evals per restart
-workers=16 # parallelisation of the restarts
+workers = min(mp.cpu_count(), 16) # parallelisation of the restarts
 
 # --- Your evolutionary optimizer (minimizer) ---
 def evolutionary_optimizer(fitness, dim, lb, ub, **kwargs):
