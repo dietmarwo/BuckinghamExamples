@@ -243,12 +243,12 @@ with empirical fit $R^2=0.982$. In practice, you can:
 
 See [cylinder_gen_params_1.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/cylinder_gen_params_1.py) how
 to generate a set of design values
-[cylinder_gen_params_1.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/cylinder_gen_params_1.py)
+[n1_pi_cylinder_design.csv](https://github.com/dietmarwo/BuckinghamExamples/blob/master/n1_pi_cylinder_design.csv)
 
 Now you can perform real experiments, use a simulator or an analytical approximation 
 [cylinder_approximation.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/cylinder_approximation.py)
 to compute a csv containing target / h values
-[n1_pi_cylinder_design_h.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/n1_pi_cylinder_design_h.py)
+[n1_pi_cylinder_design_h.csv](https://github.com/dietmarwo/BuckinghamExamples/blob/master/n1_pi_cylinder_design_h.csv)
 This "experimental" result data you can feed into the optimizer replacing the sampled data we used before:
 [use_generated.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/use_generated.py)
 
