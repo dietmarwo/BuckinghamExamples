@@ -1,3 +1,29 @@
+# Copyright (c) Dietmar Wolz.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory.
+
+'''
+    Approximates the heat‐transfer coefficient h for given parameters 
+    D, k, U, mu. rho. c_p using a well known analytical method for
+
+    "Laminar Forced‐Convection over a Cylinder": (
+        # variables: heat‐transfer coefficient h, diameter D, conductivity k,
+        # velocity U, viscosity mu, density rho, specific heat c_p
+        ['h','D','k','U','mu','rho','c_p'],
+        np.array([
+            #    h   D   k   U   mu  rho  c_p
+            [   1,  0,  1,  0,   1,   1,   0],   # M
+            [  -2,  1,  1,  1,  -1,  -3,   2],   # L
+            [  -3,  0, -3, -1,  -1,   0,  -2],   # T
+            [  -1,  0, -1,  0,   0,   0,  -1],   # Θ
+        ]),
+        ['M','L','T','Θ'],
+        'h'
+    )
+    You may replace this using either simulation or do real physical experiments.
+'''
+
 import numpy as np
 import pandas as pd
 import sys, pathlib

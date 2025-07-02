@@ -1,13 +1,18 @@
-#!/usr/bin/env python
-"""Generate design points satisfying the single continuous π‑group for cylinder h,
-with final filtering by Re_D to target Re_D ∈ [30,300].
+# Copyright (c) Dietmar Wolz.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory.
 
-    π₁ = D^0.5171 · k^-0.1687 · U^0.5171 · μ^-0.3485 · ρ^0.5171 · c_p^0.1687
-
-D is swept 5 mm … 30 mm; π₁ spans ±2 decades. For each (D, π₁) solve for U, compute
-Re_D, and keep rows only if 30 ≤ Re_D ≤ 300. This ensures the full design lies
-within the desired Reynolds-number window. Output → n1_pi_cylinder_design.csv
-"""
+'''
+    Generate design points satisfying the single continuous π‑group for cylinder h,
+    with final filtering by Re_D to target Re_D ∈ [30,300].
+    
+        π₁ = D^0.5171 · k^-0.1687 · U^0.5171 · μ^-0.3485 · ρ^0.5171 · c_p^0.1687
+    
+    D is swept 5 mm … 30 mm; π₁ spans ±2 decades. For each (D, π₁) solve for U, compute
+    Re_D, and keep rows only if 30 ≤ Re_D ≤ 300. This ensures the full design lies
+    within the desired Reynolds-number window. Output → n1_pi_cylinder_design.csv
+'''
 
 import numpy as np
 import pandas as pd
