@@ -241,6 +241,18 @@ with empirical fit $R^2=0.982$. In practice, you can:
 
 3. For quick "single-knob" experiments, sweep $\pi_1\in[0.1,10]$ on a log scale, holding all other physical parameters fixed. This lets you explore the physics along the dominant scaling direction.
 
+See [cylinder_gen_params_1.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/cylinder_gen_params_1.py) how
+to generate a set of design values
+[n1_pi_cylinder_design.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/n1_pi_cylinder_design.py)
+
+Now you can perform real experiments, use a simulator or an analytical approximation 
+[cylinder_approximation.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/cylinder_approximation.py)
+to compute a csv containing target / h values
+[n1_pi_cylinder_design_h.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/n1_pi_cylinder_design_h.py)
+This "experimental" result data you can feed into the optimizer replacing the sampled data we used before:
+[use_generated.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/use_generated.py)
+
+
 ### Two-π design ($m=2$)
 
 For a lossless reduction to two knobs, we include a second π-group. The optimizer yields:
@@ -264,6 +276,61 @@ with perfect collapse $R^2=1.00$. To design a two-knob sweep:
    $\log(Nu)$ collapses onto a smooth surface in the $(\log\pi_1,\log\pi_2)$ plane.
 
 In this way the continuous-exponent optimizer not only finds the optimal collapse, but also directly prescribes the experimental "knobs" (π-coordinates) needed for systematic studies.
+
+The optimized **two-π** result:
+
+> **R² = 1.000000**, mean_CV = 7.584792, complexity = 4.0  
+> **π₁ exponents:** [ 0.0009, -0.5777,  0.0009,  0.5767, 0.0009, 0.5777]  
+> **π₂ exponents:** [ 0.5222, -0.1731,  0.5222, -0.3492, 0.5222, 0.1731]
+
+reveals that all laminar forced‐convection data over a cylinder can be collapsed
+onto a surface in exactly **two** classical dimensionless knobs.
+
+---
+
+#### 1. First π‑Group (Prandtl‑like)
+
+```math
+\pi_1 = D^{0.0009}\,k^{-0.5777}\,U^{0.0009}\,\mu^{0.5767}\,\rho^{0.0009}\,c_p^{0.5777}
+       \approx \biggl(\frac{\mu\,c_p}{k}\biggr)^{0.5777}
+       = \mathrm{Pr}^{0.5777}
+```
+
+where the **Prandtl number** is
+
+```math
+\mathrm{Pr} = \frac{\mu\,c_p}{k}.
+```
+
+---
+
+#### 2. Second π‑Group (Reynolds–Prandtl‑like)
+
+```math
+\pi_2 = D^{0.5222}\,k^{-0.1731}\,U^{0.5222}\,\mu^{-0.3492}\,\rho^{0.5222}\,c_p^{0.1731}
+       \approx \mathrm{Re}^{0.5222}\,\mathrm{Pr}^{0.1731}
+```
+
+with the **Reynolds number** defined as
+
+```math
+\mathrm{Re} = \frac{\rho\,U\,D}{\mu}.
+```
+
+---
+
+#### Implications
+
+- **R² = 1.00** ⇒ No additional independent combinations of \
+  \((D,k,U,\mu,\rho,c_p)\) are needed.  
+- The optimizer has effectively **rediscovered** the Prandtl and Nusselt‐
+  correlation groups known from classical cylinder‐convection theory.
+
+> **Bottom line:**  
+> The physics of laminar forced convection over a cylinder is fully captured
+> by a 2‑dimensional dimensionless space spanned by π₁ and π₂, corresponding
+> to the classical Prandtl and Reynolds–Prandtl combinations.
+
 
 ### Choosing and Using Pivot Variables in Practice
 

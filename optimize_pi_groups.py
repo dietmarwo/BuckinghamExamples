@@ -120,10 +120,6 @@ def make_unbiased_surrogate(df_x, Ns, noise_scale=0.1, rng=None):
     noise = noise_scale * rng.standard_normal(Theta.shape[0])
     return Theta @ w + noise
 
-# read experimental data
-def load_data(path, var_names, dep_var):
-    return pd.read_excel(path)
-
 def make_objective(df_x, y, Ns, m, cv_floor=0.1, cv_cap=10.0, cv_pen=100.0):
     """
     Build an objective function evaluating the data
@@ -199,19 +195,9 @@ def optimize_example(rng, name, var_names, A, dims, dep_var, df=None):
         for j in range(m):
             exps = E_opt[:, j]
             print(f"    π_{j+1} exponents: {np.array2string(exps,precision=4)}")
-
-def optimize_Knudsen(rng):
-    name = "Hydrogen Knudsen Compressor"
-    example = name, (examples[name])
-    example = remove_dependent(example) 
-    name, (var_names, A, dims, dep_var) = example
-    df = load_data("knudsen_data.xlsx", var_names, dep_var)
-    optimize_example(rng, name, var_names, A, dims, dep_var, df) 
                 
 def main():
     rng = np.random.default_rng(42)
-    # optimize_Knudsen(rng)
-    # sys.exit()
     
     for example in examples.items():
         if use_remove_dependent:
