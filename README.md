@@ -222,7 +222,7 @@ Once we have optimized continuous π-groups, we can directly use them to design 
 
 $$\{D,\ k,\ U,\ \mu,\ \rho,\ c_p\}$$
 
-and the dependent response is the Nusselt number $Nu$.
+and the dependent response is the heat‐transfer coefficient $h$.
 
 ### Single-π sweep ($m=1$)
 
@@ -243,7 +243,7 @@ with empirical fit $R^2=0.982$. In practice, you can:
 
 See [cylinder_gen_params_1.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/cylinder_gen_params_1.py) how
 to generate a set of design values
-[n1_pi_cylinder_design.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/n1_pi_cylinder_design.py)
+[cylinder_gen_params_1.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/cylinder_gen_params_1.py)
 
 Now you can perform real experiments, use a simulator or an analytical approximation 
 [cylinder_approximation.py](https://github.com/dietmarwo/BuckinghamExamples/blob/master/cylinder_approximation.py)
