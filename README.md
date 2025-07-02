@@ -216,6 +216,26 @@ Since $E = N_s \cdot C$ enforces $A \cdot E = 0$, every continuous trial $C$ pro
 > * Dynamically re-weights proposal distributions based on performance statistics  
 > * Automatically balances exploration versus exploitation as the optimization landscape evolves
 
+### 4. Generation of sample parameters and target values
+
+```python
+Ns   = nullspace_basis(A)
+df_x = sample_dataframe(var_names, n=300, rng=rng) # parameters
+y    = make_unbiased_surrogate(df_x, Ns, noise_scale=0.1, rng=rng) # sample targets
+```
+
+| Step | Purpose | Why it makes sense |
+|------|---------|-------------------|
+| `nullspace_basis(A)` | Returns an **orthonormal basis** of `ker A`, so every exponent vector built from `Ns` is dimensionless (`A·Ns = 0`). | Ensures all candidate π-groups are dimensionally valid. |
+| `sample_dataframe(…)` | Fills each raw variable **log-uniformly** over six decades (10⁻³ … 10³). | Provides a rich, unbiased design space. |
+| `make_unbiased_surrogate` | Forms all π-groups `π = exp(ln X · Ns)`, picks a random weight `w`, sets `y = π·w + ε`. | Creates a *single-regime*, globally log-linear target, so a small set of π-groups can in principle recover `y` perfectly. |
+
+#### How does `make_unbiased_surrogate` avoid regime problems without constraining X?
+
+It fabricates `y` as **one** log-linear combination of the dimensionless
+groups. There are no regime switches, so the response surface is single-regime
+no matter how wide you sample the raw variables.
+
 ## Application: Laminar Forced-Convection over a Cylinder
 
 Once we have optimized continuous π-groups, we can directly use them to design and collapse experimental or simulation data. As an illustration, recall the case of forced convection over a cylinder, where our independent variables are
