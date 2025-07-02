@@ -322,7 +322,7 @@ with the **Reynolds number** defined as
 #### Implications
 
 - **R² = 1.00** ⇒ No additional independent combinations of \
-  \((D,k,U,\mu,\rho,c_p)\) are needed.  
+  $\{D,k,U,\mu,\rho,c_p\}$ are needed.  
 - The optimizer has effectively **rediscovered** the Prandtl and Nusselt‐
   correlation groups known from classical cylinder‐convection theory.
 
