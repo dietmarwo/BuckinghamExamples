@@ -235,8 +235,8 @@ with empirical fit $R^2=0.982$. In practice, you can:
 1. Compute $\pi_1$ for each dataset:
    $$\pi_1^{(i)} = D_i^{0.5171}\,k_i^{-0.1687}\,\dots\,c_{p,i}^{0.1687}$$
 
-2. Plot $\log(Nu)$ vs. $\log(\pi_1)$. If the collapse is good, all curves collapse to
-   $$\log(Nu) \approx a + b\,\log(\pi_1),$$
+2. Plot $\log(h)$ vs. $\log(\pi_1)$. If the collapse is good, all curves collapse to
+   $$\log(h) \approx a + b\,\log(\pi_1),$$
    allowing a two-parameter fit $(a,b)$.
 
 3. For quick "single-knob" experiments, sweep $\pi_1\in[0.1,10]$ on a log scale, holding all other physical parameters fixed. This lets you explore the physics along the dominant scaling direction.
@@ -272,8 +272,8 @@ with perfect collapse $R^2=1.00$. To design a two-knob sweep:
    
    while keeping the pivots constant.
    
-3. Measure $Nu$ for each $(\pi_1,\pi_2)$ combination and verify that
-   $\log(Nu)$ collapses onto a smooth surface in the $(\log\pi_1,\log\pi_2)$ plane.
+3. Measure $h$ for each $(\pi_1,\pi_2)$ combination and verify that
+   $\log(h)$ collapses onto a smooth surface in the $(\log\pi_1,\log\pi_2)$ plane.
 
 In this way the continuous-exponent optimizer not only finds the optimal collapse, but also directly prescribes the experimental "knobs" (π-coordinates) needed for systematic studies.
 
